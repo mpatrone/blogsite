@@ -1,0 +1,33 @@
+import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
+
+type PostPageProps = {
+  params: Promise<{ id: string }>;
+};
+export default async function PostPage({ params }: PostPageProps) {
+  const { id } = await params;
+
+  // const response = await fetch(
+  //   `https://jsonplaceholder.typicode.com/posts/${id}`,
+  // );
+  const post = await prisma.post.findUnique({
+    where: { id: Number(id) }
+  })
+
+  if (!post) {
+    return notFound();
+  }
+
+//   await new Promise((resolve) => setTimeout(resolve, 3000)); // Simulate a delay for loading state
+
+  return (
+    <article className="space-y-6">
+      <div className="space-y-4">
+        <h1 className="text-center text-4xl font-semibold text-zinc-950 sm:text-5-xl">
+          {post.title.charAt(0).toUpperCase() + post.title.slice(1)}
+        </h1>
+        <p className="text-lg leading-8 text-zinc-700">{post.content}</p>
+      </div>
+    </article>
+  );
+}
